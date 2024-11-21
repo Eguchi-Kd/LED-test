@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LED Control</title>
+</head>
+<body>
+  <h1>LED Pattern Control</h1>
+  <button id="connect">Connect to Arduino</button>
+  <button id="pattern1">Pattern 1</button>
+  <button id="pattern2">Pattern 2</button>
+  <button id="off">Turn Off</button>
+
+  <script>
+    let port;
+    let writer;
+
+    document.getElementById('connect').addEventListener('click', async () => {
+      port = await navigator.serial.requestPort(); // デバイス選択
+      await port.open({ baudRate: 9600 }); // ボーレート設定
+      writer = port.writable.getWriter();
+      alert('Connected to Arduino!');
+    });
+
+    document.getElementById('pattern1').addEventListener('click', () => {
+      sendCommand('pattern1\n');
+    });
+
+    document.getElementById('pattern2').addEventListener('click', () => {
+      sendCommand('pattern2\n');
+    });
+
+    document.getElementById('off').addEventListener('click', () => {
+      sendCommand('off\n');
+    });
+
+    async function sendCommand(command) {
+      if (writer) {
+        const data = new TextEncoder().encode(command);
+        await writer.write(data);
+      } else {
+        alert('Please connect to Arduino first.');
+      }
+    }
+  </script>
+</body>
+</html>
